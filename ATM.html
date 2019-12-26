@@ -8,67 +8,121 @@
   </head>
   <body>
     <div class="atms">
-      <div class="atm"><button>del</button> </div>
-      <div class="atm "><button>del</button></div>
-      <div class="atm"><button>del</button></div>
     </div>
     <div class="people">
-      <div class="mans"></div>
       
     </div>
 
 <script type="text/javascript">
 
-let atms = document.getElementsByClassName('atms');
+let atms = document.getElementsByClassName('atms')[0];
+let people = document.getElementsByClassName('people')[0];
 let mans = [];
 let atmBody = [];
 
 class ATM {
-    constructor () {
+
+    constructor (container) {
+      
+      this.block = container;
+
       this.atmDom = document.createElement('div');
       this.atmDom.className = 'atm';
-      this.atms.appendChild(atmDom);
+      this.block.appendChild(this.atmDom); 
+      this.btn = document.createElement('button');
+      this.btn.innerHTML = 'del';
+      this.atmDom.appendChild(this.btn); 
+
       this.isFree = false;
       this.atmDelay = Math.floor(Math.random() * (1000 - 500 + 1)) + 500;
     }
 
+
     process(delay){
+      this.atmDom.classList.add('free');
       this.isFree = true;
       setTimeout(() => { 
         console.log('process');
         this.isFree = false;
+        this.atmDom.classList.remove('free');
       }, delay+this.atmDelay);
+      console.log(delay+this.atmDelay);
     }
 
 };
 
 class Man {
-  constructor (){
-    this.manDelay = Math.floor(Math.random() * (4000 - 1000 + 1)) + 1000;
+  constructor (container){
+    this.block = container;
+    this.manDelay = Math.floor(Math.random() * (3000 - 1000 + 1)) + 1000;
   }
+
+  createView(){
+      this.manDom = document.createElement('div');
+      this.manDom.className = 'mans';
+      this.block.appendChild(this.manDom);  
+    }
 };
 
+
+//=======================ATM==========================// 
+
+
 function createATM () {
-  if (atmBody.length <= 3){
-    atmBody.push(new ATM);
-      createATM ();
+  if (atmBody.length <= 2){
+    atmBody.push(new ATM(atms));
+    createATM ();
   }
 }
 
-createATM();
 
+
+//=======================MAN==========================// 
 function createMan () {
-  setTimeout(()=>{
-    if (mans.length <= 4){
-      mans.push(new Man);
-      createMan ();
+  let count = 7;
+
+    if (mans.length <= count){
+      mans.push(new Man(people));
+      createMan (); 
       }
-    }, 3000);
-    console.log(mans);
+
+
 }
 
-createMan();
+function viewMan(){
+  people.innerHTML='';
+  mans.forEach((man) => {
+    man.createView();
+  })
+}
 
+//=======================Move==========================// 
+
+function move(){
+  atmBody.forEach((atm) => {
+    let man = mans.shift(0);
+    
+    if (mans.length !== 0){
+      if (!atm.isFree) {
+        viewMan();
+        atm.process(man.manDelay);
+      }
+    } else {
+      createMan ();
+      setTimeout(move ,  1000);
+    }
+  });
+
+}
+
+//=======================init==========================// 
+function init(){
+  createATM();
+  createMan();
+  move();
+}
+
+init();
 
 </script>
     </main>
