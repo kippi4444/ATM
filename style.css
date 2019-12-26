@@ -1,0 +1,34 @@
+
+.atms{
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+}
+.atm {
+    border: 1px solid black;
+    width: 200px;
+    height: 300px;
+    background-color: rgb(255, 0, 0, 0.9);
+}
+
+.free {
+    background-color: rgb(0, 255, 0, 0.9);
+}
+
+.atm button {
+    float: right;
+}
+
+.people{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 250px;
+}
+
+.mans {
+    margin: 10px;
+    width: 50px;
+    height: 50px;
+    background-color: #000000;
+}

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title></title>
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <div class="atms">
+      <div class="atm"><button>del</button> </div>
+      <div class="atm "><button>del</button></div>
+      <div class="atm"><button>del</button></div>
+    </div>
+    <div class="people">
+      <div class="mans"></div>
+      
+    </div>
+
+<script type="text/javascript">
+
+let atms = document.getElementsByClassName('atms');
+let mans = [];
+let atmBody = [];
+
+class ATM {
+    constructor () {
+      this.atmDom = document.createElement('div');
+      this.atmDom.className = 'atm';
+      this.atms.appendChild(atmDom);
+      this.isFree = false;
+      this.atmDelay = Math.floor(Math.random() * (1000 - 500 + 1)) + 500;
+    }
+
+    process(delay){
+      this.isFree = true;
+      setTimeout(() => { 
+        console.log('process');
+        this.isFree = false;
+      }, delay+this.atmDelay);
+    }
+
+};
+
+class Man {
+  constructor (){
+    this.manDelay = Math.floor(Math.random() * (4000 - 1000 + 1)) + 1000;
+  }
+};
+
+function createATM () {
+  if (atmBody.length <= 3){
+    atmBody.push(new ATM);
+      createATM ();
+  }
+}
+
+createATM();
+
+function createMan () {
+  setTimeout(()=>{
+    if (mans.length <= 4){
+      mans.push(new Man);
+      createMan ();
+      }
+    }, 3000);
+    console.log(mans);
+}
+
+createMan();
+
+
+</script>
+    </main>
+  </body>
+</html>
