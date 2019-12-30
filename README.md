@@ -1,2 +1,2 @@
 # ATM
-simulator atms
+emulator atms
