@@ -33,12 +33,10 @@ class ViewAtm {
   };
 
   viewMan(count) {
-
     this.colorMan = Math.floor(Math.random() * (255 - 0 + 1)) + 0;
     this.manDom = document.createElement('div');
     this.manDom.className = 'mans';
     this.manDom.innerHTML =  count;
-    this.manDom.setAttribute("style", `background-color: rgb(0, ${this.colorMan}, 180, 0.9)`);
     this.people.appendChild(this.manDom);  
   };
 
@@ -170,7 +168,8 @@ class ModelAtm{
           }, man.manDelay+self.atmDelay);
         } 
       });
-    } else {self.view.clearBlockMans();
+    } else {
+      self.view.clearBlockMans();
       // console.log(self.mans);
       // console.log(self.mans.length);
       // console.log(self.mans[0]);
@@ -206,7 +205,8 @@ let view = new ViewAtm;
 let model = new ModelAtm(view);
 let controller = new ControllerAtm(model);
 
-model.init();
+
+document.addEventListener("DOMContentLoaded",model.init , false);
 
 
 

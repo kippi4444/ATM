@@ -25,15 +25,20 @@ button:hover{
     justify-content: space-around;
 }
 .atm {
-    border: 1px solid black;
-    width: 100px;
+    width: 130px;
     height: 200px;
-
-    background-color: rgba(0, 170, 0, 0.9);
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-image: url('img/atmFree.png');
+    box-shadow: 0 2px 10px  rgba(0, 170, 0, 0.9);
+    transition: .3s ease-in;
+    /* background-color: rgba(0, 170, 0, 0.9); */
 }
 
 .free {
-    background-color: rgba(209, 1, 1, 0.9);
+    background-image: url('img/atmNoFree.png');
+    box-shadow: 0 2px 10px rgba(209, 1, 1, 0.9);
+    /* background-color: rgba(209, 1, 1, 0.9); */
 }
 
 .atm button {
@@ -43,7 +48,6 @@ button:hover{
 .people{
     display: flex;
     align-items: center;
-
     justify-content: start ;
     margin-top: 250px;
 }
@@ -55,7 +59,14 @@ button:hover{
     font-size: 24px;
     color: blanchedalmond;
     margin: 10px;
-    width: 50px;
-    height: 50px;
-    background-color: rgba(0, 0, 0, 0.9);
+    width: 33px;
+    height: 100px; 
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-image: url('img/man.png');
+    /* background-color: rgba(0, 0, 0, 0.9); */
+    transition: .3s ease-in;
+}
+.out{
+    opacity: 0;
 }
