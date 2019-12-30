@@ -7,8 +7,9 @@
     <link rel="stylesheet" href="style.css">
   </head>
   <body>
-    <button id="createATM">create ATM</button>
+    
     <div class="atms">
+      <button id="createATM">create ATM</button>
     </div>
     <div class="people">
       
@@ -74,16 +75,18 @@ class ModelAtm{
 
     class ATM {
 
-      constructor () {
-        this.atms = document.getElementsByClassName('atms')[0];
+      constructor (id) {
+        this.id = id;
         this.isFree = false;
         this.atmDelay = self.randomNumber(500, 3000);
         this.create();
       }
 
       create() {
+        this.atms = document.getElementsByClassName('atms')[0];
         this.atmDom = document.createElement('div');
         this.atmDom.className = 'atm';
+        this.atmDom.id = this.id;
         this.atms.appendChild(this.atmDom); 
         this.btn = document.createElement('button');
         this.btn.className = 'del';
@@ -97,15 +100,19 @@ class ModelAtm{
 
     }
 
-    self.atms.push(new ATM);
-
+    self.atms.push(new ATM(self.count));
+    self.count++;
   };
 
   delATM() {
 
     event.target.parentElement.remove();
-    self.atms.shift(this);
-    console.log(self.atms);
+    self.atms.forEach((el, i) => {
+      if(event.target.parentElement.id == el.id){
+        self.atms.splice(i, 1);
+      }
+    })
+
 
   };
   
@@ -152,7 +159,7 @@ class ModelAtm{
     if (self.mans.length){
       self.atms.forEach(el=> {
         if(!el.isFree && self.mans.length){ 
-          let man=self.mans.shift(0); // забираем человека с очереди
+          let man=self.mans.shift(); // забираем человека с очереди
           el.isFree = true;  // ставим флаг что банкомат занят
           el.changeStateATM(true); // меняем цвет банкомата на красный
           self.view.manOut(); // перерисовываем очередь
@@ -168,13 +175,7 @@ class ModelAtm{
           }, man.manDelay+self.atmDelay);
         } 
       });
-    } else {
-      self.view.clearBlockMans();
-      // console.log(self.mans);
-      // console.log(self.mans.length);
-      // console.log(self.mans[0]);
-    }
-      // setTimeout(self.checkIfAtmFree, 500);
+    } else  self.view.clearBlockMans();
       
   };
 
@@ -188,15 +189,25 @@ class ControllerAtm{
   }
 
   init(){
+    let atms = document.getElementsByClassName('atms')[0];
     let btnCreateAtm = document.getElementById('createATM');
+    let btnDelAtm = document.getElementsByClassName('del');
     btnCreateAtm.addEventListener("click", this.model.createATM);
-    setTimeout(()=>{                                               //ждем пока отрисует людей
-      let btnDelAtm = document.getElementsByClassName('del');
+
+    setTimeout(()=>{
       for (let b=0; b < btnDelAtm.length; b++) {
-        btnDelAtm[b].addEventListener("click", this.model.delATM , false);
+        btnDelAtm[b].addEventListener("click", this.model.delATM, false);
       }
-    },0);
+    });
+
+    atms.addEventListener('click', ()=>{
+      for (let b=0; b < btnDelAtm.length; b++) {
+        btnDelAtm[b].addEventListener("click", this.model.delATM, false);
+      }
+    }, false);
+
   };
+
 
 }
 
