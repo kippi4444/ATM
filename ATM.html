@@ -22,8 +22,6 @@
 <script type="text/javascript">
 
 
-
-
 class ViewAtm {
 
   constructor () {
@@ -38,6 +36,24 @@ class ViewAtm {
   manOut() {
     this.people.firstChild.remove();
   };
+
+  manInATM(coord, id){
+    let body = document.body;
+    let man = document.createElement('div');
+    man.classList.add('move');
+    man.classList.add(id);
+    man.innerHTML = id;
+    man.style.left=`${coord.x}px`;
+    man.style.top=`${coord.y}px`;
+    body.appendChild(man);
+
+  }
+
+  manOutATM(id){
+    let manOut = document.getElementsByClassName(id)[0];
+    manOut.remove();
+
+  }
 
   disabledButton(btn){
     let start = document.getElementById('start');
@@ -59,6 +75,7 @@ class ViewAtm {
 class ModelAtm {
 
   constructor (view) {
+   
     self = this;
     self.view = view;
     self.parameters = {
@@ -73,7 +90,6 @@ class ModelAtm {
       work : false,
     };
   }
-
 
   start(){
     self.parameters.work = true;
@@ -125,7 +141,7 @@ class ModelAtm {
       getCoordinate (){
         this.coord = {
           x : this.atmDom.offsetLeft,
-          y : this.atmDom.offsetTop
+          y : this.atmDom.offsetTop+100
         }
         return this.coord;
       }
@@ -135,10 +151,6 @@ class ModelAtm {
       };
 
     }
-
-
-    const observer = new EventObserver();
-
 
     self.parameters.atms.push(new ATM(self.parameters.count));
     self.parameters.count++;
@@ -170,7 +182,7 @@ class ModelAtm {
 
     }
 
-    while (i <= x){
+    while (i < x){
       self.parameters.mans.push(new Man(this.parameters.count));
       self.view.viewMan(this.parameters.count++);
       i++;
@@ -180,12 +192,15 @@ class ModelAtm {
 
   nextMan(){
     if (self.parameters.work){
+
       let delayForNextMan = self.randomNumber(2000, 8000);
       let countMan = self.randomNumber(1, 4);
+      
       setTimeout(()=>{
         self.createMan(countMan);
         self.nextMan();
       },delayForNextMan);
+
       if (!self.parameters.timers.length){
         setTimeout(self.checkIfAtmFree, 1000);
       }
@@ -203,24 +218,34 @@ class ModelAtm {
     if (self.parameters.work){
 
       if (self.parameters.mans.length ){
+
         self.parameters.atms.forEach(el=> {
-          if(!el.isFree && self.parameters.mans.length){ 
+
+          if(!el.isFree && self.parameters.mans.length){
             let man=self.parameters.mans.shift(); // забираем человека с очереди
+
             el.isFree = true;  // ставим флаг что банкомат занят
             el.changeStateATM(true); // меняем цвет банкомата на красный
-            
             self.view.manOut(); // перерисовываем очередь
+            self.view.manInATM(el.getCoordinate(),man.id); //пробрасываем координаты и номер человечка во вьюху
+
             setTimeout(() => { // запускаем имтацию работы с банкоматом
               el.isFree = false;  //банкомат свободен
               el.changeStateATM(false); //меняем цвет на зеленый
+              self.view.manOutATM(man.id); // кидаем номер человека чтобы удалить
+              
               self.parameters.timer = setTimeout(()=>{
                 self.checkIfAtmFree();
                 self.parameters.timers.shift();
               }, man.manDelayOut); // запускаем проверку на наличие людей для освободившегося банкомата
+
               self.parameters.timers.push(self.parameters.timer);
             }, man.manDelay+el.atmDelay);
+
           } 
+
         });
+
       } else  self.view.clearBlockMans();
 
     } else return;
@@ -244,7 +269,6 @@ class ControllerAtm{
 
     start.addEventListener('click', this.model.start);
     stop.addEventListener('click', this.model.stop);
-
     btnCreateAtm.addEventListener("click", this.model.createATM);
 
     setTimeout(()=>{
@@ -258,8 +282,6 @@ class ControllerAtm{
         btnDelAtm[b].addEventListener("click", this.model.delATM, false);
       }
     }, false);
-
-
 
 
   };
