@@ -7,6 +7,16 @@ button{
     border: 1px solid #464646;
     background-color: #464646;
     margin: 5px;
+    transition: .3s ease-in-out;
+}
+
+button:disabled{
+    color: white;
+    padding: 5px 10px;
+    border: 1px solid #9b9b9b;
+    background-color: #9b9b9b;
+    margin: 5px;
+    transition: .3s ease-in-out;
 }
 
 button:hover{
@@ -51,6 +61,18 @@ button:hover{
     justify-content: start ;
     margin-top: 250px;
 }
+
+/* .move{
+    position: absolute;
+    background-image: url('img/man.png');
+    width: 33px;
+    height: 100px; 
+    background-size: contain;
+    background-repeat: no-repeat;
+    transition: .5s linear;
+} */
+
+
 
 .mans {
     display: flex;
