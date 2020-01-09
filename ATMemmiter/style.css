@@ -29,6 +29,7 @@ button:hover{
     display: flex;
     justify-content: space-around;
 }
+
 .atm {
     position: relative;
     width: 130px;
@@ -39,8 +40,6 @@ button:hover{
     box-shadow: 0 2px 10px  rgba(0, 170, 0, 0.9);
     transition: .3s ease-in-out;
 }
-
-
 
 .free {
     background-image: url('img/atmNoFree.png');
@@ -60,23 +59,6 @@ button:hover{
     margin-top: 250px;
 }
 
-.move{
-    position: absolute;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-image: url('img/man.png');
-    color: yellow;
-    width: 33px;
-    height: 100px; 
-    background-size: contain;
-    background-repeat: no-repeat;
-    left: calc(50% - 33px/2);
-    top:50%;
-}
-
-
-
 .mans {
     display: flex;
     align-items: center;
@@ -90,6 +72,7 @@ button:hover{
     background-repeat: no-repeat;
     background-image: url('img/man.png');
 }
-.out{
-    opacity: 0;
+
+.menu {
+    padding: 10px;
 }

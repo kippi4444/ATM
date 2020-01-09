@@ -7,14 +7,16 @@
     <link rel="stylesheet" href="style.css">
   </head>
   <body>
-    
-    <button id="start">start</button>
-    <button id="stop">stop</button>
-    <button id="pause">pause</button>
-    <button id="createATM">create ATM</button>
-    <div class="atms"></div>
-    <div class="people"></div>
+    <div id='app'>
+      <!-- <div class='menu'>
+        <button id="start">start</button>
+        <button id="stop">stop</button>
+        <button id="pause">pause</button>
+        <button id="createATM">create ATM</button></div>
 
+      <div class="atms"></div>
+      <div class="people"></div> -->
+  </div>
 
 <script type="text/javascript">
 
@@ -39,6 +41,7 @@ class ATM {
     this.id = id;
     this.isFree = false;
     this.atmDelay = self.randomNumber(500, 3000);
+    this.create();
   }
   create() {
     this.atms = document.getElementsByClassName('atms')[0];
@@ -50,6 +53,13 @@ class ATM {
     this.btn.className = 'del';
     this.btn.innerHTML = 'del';
     this.atmDom.appendChild(this.btn); 
+  }
+  getCoord(){
+    this.coord = {
+      x : (this.atmDom.offsetLeft + this.atmDom.offsetWidth/2),
+      y : (this.atmDom.offsetTop + this.atmDom.offsetHeight/1.7),
+    }
+    return  this.coord;
   }
   changeStateATM(){
     this.isFree?this.atmDom.classList.add('free'):this.atmDom.classList.remove('free');
@@ -69,14 +79,13 @@ class ViewAtm extends EventEmitter {
 
   constructor () {
     super();
-    this.people = document.getElementsByClassName('people')[0];
-    this.atms = document.getElementsByClassName('atms')[0];
-    this.init();
-
   }
 
   init(){
     let body = document.body;
+
+
+    this.createMenuAndBlocks ();
         body.addEventListener('click', (e) => {
           switch (e.target.innerHTML){
             case 'del':
@@ -98,27 +107,51 @@ class ViewAtm extends EventEmitter {
         });
   }
 
-  manGoToAtm() {
-    this.people.firstChild.remove();
+  createMenuAndBlocks () {
+    let body = document.body,
+        app = document.getElementById('app'),
+        start = document.createElement('button'),
+        stop = document.createElement('button'),
+        pause = document.createElement('button'),
+        createATM = document.createElement('button'),
+        menu = document.createElement('div'),
+        atms = document.createElement('div'),
+        people = document.createElement('div'); 
+    start.id = 'start';
+    stop.id = 'stop';
+    pause.id = 'pause';
+    createATM.id = 'createATM';
+    start.innerHTML = 'start';
+    stop.innerHTML = 'stop';
+    pause.innerHTML = 'pause';
+    createATM.innerHTML = 'create ATM';
+    menu.classList.add('menu');
+    atms.classList.add('atms');
+    people.classList.add('people');
+    body.appendChild(app);
+    app.appendChild(menu);
+    app.appendChild(atms);
+    app.appendChild(people);
+    menu.appendChild(start);
+    menu.appendChild(stop);
+    menu.appendChild(pause);
+    menu.appendChild(createATM);
   }
 
-  clearAtmsAndPeople(){
+  manGoToAtm(coord, id) {
+    let thatMan = document.getElementById(id);
+    thatMan.style.position = 'absolute';
+    thatMan.style.left = coord.x - thatMan.offsetWidth +'px';
+    thatMan.style.top = coord.y +'px';
+  }
+
+  clearAllBlocks(){
     this.atms.innerHTML = '';
     this.people.innerHTML = '';
   }
 
-  manInAtm(container,id){
-    let atm = document.getElementById(container);
-    let body = document.body;
-    let man = document.createElement('div');
-    man.classList.add('move');
-    man.classList.add(id);
-    man.innerHTML = id;
-    atm.appendChild(man);
-  }
-
-  manOutAtm(container){
-    let manOut = document.getElementsByClassName(`move ${container}`)[0];
+  manOutAtm(id){
+    let manOut = document.getElementById(id);
     manOut?manOut.remove():'';
   }
 
@@ -130,8 +163,10 @@ class ViewAtm extends EventEmitter {
   }
 
   viewQueue(count) {
+    this.people = document.getElementsByClassName('people')[0];
     this.manDom = document.createElement('div');
     this.manDom.className = 'mans';
+    this.manDom.id = count;
     this.manDom.innerHTML =  count;
     this.people.appendChild(this.manDom);  
   }
@@ -160,7 +195,7 @@ class ModelAtm extends EventEmitter  {
   start(){
     self.parameters.work = true;
     self.init();
-    this.emit('disableButton', true);
+    this.emit('enableButton', true);
   }
 
   stop(){
@@ -232,9 +267,8 @@ class ModelAtm extends EventEmitter  {
 
   atmWork(atm , man){
     atm.isFree = true;  
-    this.emit('manGoToAtm');
+    this.emit('manGoToAtm',[atm.getCoord(), man.id]);
     atm.changeStateATM(); 
-    this.emit('manInAtm', [atm.id, man.id]);
   }
 
   atmFree(atm, man){
@@ -259,20 +293,21 @@ class ControllerAtm extends EventEmitter {
     view.on('pause', () => this.model.pause());
     view.on('createAtm', () => this.model.createAtm());
     model.on('createMan', (count) => this.view.viewQueue(count));
-    model.on('manGoToAtm', () => this.view.manGoToAtm());
-    model.on('manInAtm', (allId) => this.view.manInAtm(...allId));
+    model.on('manGoToAtm', (allArgs) => this.view.manGoToAtm(...allArgs));
     model.on('manOutAtm', (id) => this.view.manOutAtm(id));
     model.on('disableButton', (state) => this.view.disabledButton(state));
+    model.on('enableButton', (state) => this.view.disabledButton(state));
   }
 
 }
 
 
 let model = new ModelAtm;
-let controller = new ControllerAtm(model, new ViewAtm);
+let view =  new ViewAtm;
+let controller = new ControllerAtm(model,view);
 
-// model.start();
-// document.addEventListener("DOMContentLoaded",controller.init , false);
+view.init();
+
 
 
 
