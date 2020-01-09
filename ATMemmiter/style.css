@@ -25,35 +25,32 @@ button:hover{
     border: 1px solid #8a8a8a;
 }
 
-
-.del{
-    margin: 0;
-}
-
 .atms{
     display: flex;
-    align-items: center;
     justify-content: space-around;
 }
 .atm {
+    position: relative;
     width: 130px;
     height: 200px;
     background-size: contain;
     background-repeat: no-repeat;
     background-image: url('img/atmFree.png');
     box-shadow: 0 2px 10px  rgba(0, 170, 0, 0.9);
-    transition: .3s ease-in;
-    /* background-color: rgba(0, 170, 0, 0.9); */
+    transition: .3s ease-in-out;
 }
+
+
 
 .free {
     background-image: url('img/atmNoFree.png');
     box-shadow: 0 2px 10px rgba(209, 1, 1, 0.9);
-    /* background-color: rgba(209, 1, 1, 0.9); */
 }
 
 .atm button {
-    float: right;
+    margin: 0;
+    position: absolute;
+    right: 0;
 }
 
 .people{
@@ -74,7 +71,8 @@ button:hover{
     height: 100px; 
     background-size: contain;
     background-repeat: no-repeat;
-    transition: .5s linear;
+    left: calc(50% - 33px/2);
+    top:50%;
 }
 
 
@@ -91,8 +89,6 @@ button:hover{
     background-size: contain;
     background-repeat: no-repeat;
     background-image: url('img/man.png');
-    /* background-color: rgba(0, 0, 0, 0.9); */
-    transition: .3s ease-in;
 }
 .out{
     opacity: 0;

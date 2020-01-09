@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title></title>
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    
+    <button  id="start">start</button>
+    <button  id="stop">stop</button>
+    <button  id="pause">pause</button>
+    <button id="createATM">create ATM</button>
+    <div class="atms"></div>
+    <div class="people"></div>
+
+
+<script type="text/javascript">
+
+
+class ViewAtm {
+
+  constructor () {
+    this.people = document.getElementsByClassName('people')[0];
+    this.atms = document.getElementsByClassName('atms')[0];
+  }
+
+  manOut() {
+    this.people.firstChild.remove();
+  };
+
+  clearAtmsAndPeople(){
+    this.atms.innerHTML = '';
+    this.people.innerHTML = '';
+  }
+
+  manInATM(container,id){
+    let atm = document.getElementById(container);
+    let body = document.body;
+    let man = document.createElement('div');
+    man.classList.add('move');
+    man.classList.add(id);
+    man.innerHTML = id;
+    atm.appendChild(man);
+
+  };
+
+  manOutATM(container){
+    let manOut = document.getElementsByClassName(`move ${container}`)[0];
+    manOut.remove();
+
+  };
+
+  disabledButton(btn){
+    let start = document.getElementById('start');
+    let stop = document.getElementById('stop');
+    let createATM = document.getElementById('createATM');
+    btn?(start.disabled = true ) && (stop.disabled = false, createATM.disabled = false) :(stop.disabled = true, createATM.disabled = true) && (start.disabled = false);
+  }
+
+  viewMan(count) {
+    this.colorMan = Math.floor(Math.random() * (255 - 0 + 1)) + 0;
+    this.manDom = document.createElement('div');
+    this.manDom.className = 'mans';
+    this.manDom.innerHTML =  count;
+    this.people.appendChild(this.manDom);  
+  };
+
+}
+
+class ModelAtm {
+
+  constructor (view) {
+   
+    self = this;
+    self.view = view;
+    self.isPause = false;
+    self.isPauseOnOff = 0;
+    self.parameters = {
+      factAtm : 0,
+      count : 1,
+      countAtm : 2,
+      countMan : 5,
+      mans : [],
+      atms : [],
+      timer : null,
+      timers : [],
+      work : false,
+      timersPause: []
+    };
+
+  }
+
+  start(){
+    self.parameters.work = true;
+    self.init();
+    self.view.disabledButton(true);
+  }
+
+  stop(){
+    self.parameters.work = false;
+    self.view.disabledButton(false);
+    self.parameters = {
+      factAtm : 0,
+      count : 1,
+      countAtm : 2,
+      countMan : 5,
+      mans : [],
+      atms : [],
+      timer : null,
+      timers : [],
+      work : false
+    };
+    self.view.clearAtmsAndPeople();
+
+  }
+
+  pause(){
+    if (!self.isPauseOnOff){
+      self.isPause = true;
+      self.isPauseOnOff = 1;
+      self.parameters.timersPause.forEach(el => {
+        clearTimeout(el.id);
+        console.log("do",el.d);
+        el.d = el.d - (Date.now() - el.start);
+        console.log('posle',el.d);
+      });
+    } else {
+      self.isPause = false;
+      self.isPauseOnOff = 0;
+      self.start();
+    }
+    
+  }
+
+  init() {
+    if (!self.parameters.work){
+      return;
+    } 
+
+    while (self.parameters.factAtm <= self.parameters.countAtm){
+      self.parameters.factAtm++;
+      self.createATM();
+    }
+
+    self.createMan(self.parameters.countMan);
+    self.checkIfAtmFree();
+    self.nextManInQueue();
+ 
+  };
+
+  createATM() {
+
+    class ATM {
+
+      constructor (id) {
+        this.id = id;
+        this.isFree = false;
+        this.atmDelay = self.randomNumber(500, 3000);
+        this.create();
+      }
+
+      create() {
+        this.atms = document.getElementsByClassName('atms')[0];
+        this.atmDom = document.createElement('div');
+        this.atmDom.className = 'atm';
+        this.atmDom.id = this.id;
+        this.atms.appendChild(this.atmDom); 
+        this.btn = document.createElement('button');
+        this.btn.className = 'del';
+        this.btn.innerHTML = 'del';
+        this.atmDom.appendChild(this.btn); 
+      };
+
+      changeStateATM(){
+        this.isFree?this.atmDom.classList.add('free'):this.atmDom.classList.remove('free');
+      };
+
+    }
+
+    self.parameters.atms.push(new ATM(self.parameters.count));
+    self.parameters.count++;
+  };
+
+  delATM() {
+
+    event.target.parentElement.remove();
+    self.parameters.atms.forEach((el, i) => {
+      if(event.target.parentElement.id == el.id){
+        self.parameters.atms.splice(i, 1);
+      }
+    })
+
+
+  };
+  
+  createMan(x=1) {
+
+    let i=1;
+
+    class Man {
+
+      constructor (id){
+        this.id = id;
+        this.manDelay = self.randomNumber(1000, 3000);
+        this.manDelayOut = self.randomNumber(500, 2000);
+      }
+
+    }
+
+    while (i < x){
+      self.parameters.mans.push(new Man(this.parameters.count));
+      self.view.viewMan(this.parameters.count++);
+      i++;
+      if (self.parameters.mans.length == 1){
+        self.timersPauseSettings(
+          setTimeout(self.checkIfAtmFree, 1000)
+          ,1000);
+      }
+    }
+
+  };
+
+  nextManInQueue(){
+    if (!self.parameters.work){
+      return;
+    } 
+      let delayForNextMan = self.randomNumber(2000, 8000);
+      let countMan = self.randomNumber(1, 4);
+      
+      self.timersPauseSettings(
+      setTimeout(()=>{
+        self.createMan(countMan);
+        self.nextManInQueue();
+      },delayForNextMan)
+      , delayForNextMan);
+      
+  };
+
+  randomNumber(min, max){
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  };
+
+
+  checkIfAtmFree() {            //Логика 
+
+    if (!self.parameters.work){
+      return;
+    } 
+    self.parameters.atms.forEach(el=> {
+      if(!el.isFree && self.parameters.mans.length){
+        let man=self.parameters.mans.shift(); // забираем человека с очереди
+        self.atmWork(el , man);
+        self.timersPauseSettings(
+            setTimeout(() => { // запускаем имтацию работы с банкоматом
+            self.atmFree(el, man);
+            }, man.manDelay+el.atmDelay)
+        , man.manDelay+el.atmDelay);
+      } 
+    });
+  };
+
+
+  atmWork(atm , man){
+    atm.isFree = true;  // ставим флаг что банкомат занят
+    self.view.manOut(); // перерисовываем очередь
+    atm.changeStateATM(); // меняем цвет банкомата на красный
+    self.view.manInATM(atm.id, man.id); //пробрасываем координаты и номер человечка во вьюху
+  };
+
+
+  atmFree(atm, man){
+    atm.isFree = false;
+    atm.changeStateATM(); //меняем цвет на зеленый
+    self.view.manOutATM(man.id); // кидаем номер человека чтобы удалить
+
+    self.parameters.timer = setTimeout(()=>{
+      self.checkIfAtmFree();
+    }, man.manDelayOut); // запускаем проверку на наличие людей для освободившегося банкомата
+
+    self.timersPauseSettings(self.parameters.timer,   man.manDelayOut);
+  }
+
+  timersPauseSettings (t, d){
+
+    let thisTimer = {
+      id : t,
+      start : t? Date.now():'',
+      end :  Date.now() + d,
+      d: d
+    }
+    self.parameters.timersPause.push(thisTimer);
+   console.log( self.parameters.timersPause[0].d);
+    return t;
+
+  };
+    
+
+}
+
+class ControllerAtm{
+
+  constructor (model){
+    this.model = model;
+    this.init();
+  }
+
+  init(){
+    let body = document.body;
+
+    body.addEventListener('click', (e) => {
+          switch (e.target.innerHTML){
+            case 'del':
+              this.model.delATM(e);
+            break;
+            case 'start':
+              this.model.start();
+            break;
+            case 'stop':
+              this.model.stop();
+            break;
+            case 'pause':
+              this.model.pause();
+            break;
+            case 'createATM':
+              this.model.createATM();
+            break;
+          }
+    }, false);
+
+  };
+
+
+}
+
+
+let view = new ViewAtm;
+let model = new ModelAtm(view);
+let controller = new ControllerAtm(model);
+
+
+// document.addEventListener("DOMContentLoaded",controller.init , false);
+
+
+
+</script>
+    </main>
+  </body>
+</html>
